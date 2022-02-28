@@ -52,10 +52,10 @@ jobs:
       - checkout
       - install-base-dependencies
       - run:
-        name: run security scan
-        command: |
-          pip3 install bandit
-          python3 -m bandit cn_news_clustering/*
+          name: run security scan
+          command: |
+            pip3 install bandit
+            python3 -m bandit cn_news_clustering/*
 
 workflows:
   default:
