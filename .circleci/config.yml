@@ -43,3 +43,9 @@ jobs:
           command: |
             pip3 install pytest pytest-mock
             make test
+
+workflows:
+  default:
+    jobs:
+      - build
+      - test
