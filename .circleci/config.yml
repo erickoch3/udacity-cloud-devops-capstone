@@ -3,35 +3,41 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2
+
+commands:
+  install-base-dependencies:
+    description: Install dependencies for our app
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            make install
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+
 jobs:
+
   build:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: ewkoch3/base:test
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
-
     steps:
       - checkout
-
-      - run:
-          name: install dependencies
-          command: |
-            pip install -r requirements.txt
-        
+      - install-base-dependencies
       # run tests!
-      - run:
-          name: run tests
-          command: |
-            make test
-      # run lints!
       - run:
           name: run lint
           command: |
             make lint
+  
+  test:
+    docker:
+      - image: ewkoch3/base:test
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install-base-dependencies
+      - run:
+          name: run tests
+          command: |
+            make test
