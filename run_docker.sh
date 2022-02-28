@@ -10,4 +10,4 @@ docker build . --tag=cn_news_clusters
 docker ps
 
 # Step 3: 
-docker run -p 8000:80 cn_news_clusters
+docker run -p 8080:80 cn_news_clusters

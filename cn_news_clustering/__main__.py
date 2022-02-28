@@ -1,5 +1,5 @@
-from scrape_articles import WebsiteDatabase
-from globals import Globals as glob
+from .scrape_articles import WebsiteDatabase
+from .params import Globals as glob
 
 
 def main():

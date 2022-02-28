@@ -1,9 +1,7 @@
 """ Conduct NLP Pre-Processing """
 import jieba
 import re
-# TODO: The following two libraries speed up parsing
-# import lxml
-# import cchardet
+
 
 def tokenize(sentence):
     """ Removes duplicates and punctuation from sentence. """

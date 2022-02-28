@@ -1,8 +1,7 @@
 """ Simple clustering solution using KMeans """
 from sklearn import cluster
 import joblib
-from globals import Globals as glob
-from sklearn.feature_extraction.text import CountVectorizer
+from params import Globals as glob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from lexical_analysis import tokenize
 

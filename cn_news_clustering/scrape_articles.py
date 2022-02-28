@@ -3,15 +3,14 @@
 """ This module helps us scrape articles from a given websites """
 from lexical_analysis import is_chinese_char
 from clustering import cluster_pages
-from globals import Globals as glob
+from params import Globals as glob
 from bs4 import BeautifulSoup
 import requests
 import json
 from pathlib import Path
 from collections import OrderedDict
 import logging
-import urllib3
-# TODO: Convert our print statements to logging.
+
 
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -23,8 +22,7 @@ class WebsiteDatabase:
         self.pages_data = OrderedDict()
         self.invalid_sites = dict()
         self._load_db_from_json()
-        self.sites = list()
-        self._scrape_sites(sites)
+        self.sites = [Website(site, self) for site in sites]
 
     def _load_db_from_json(self):
         """ Loads data from a json if found. """
@@ -48,16 +46,13 @@ class WebsiteDatabase:
         except json.decoder.JSONDecodeError:
             logging.error(f"{glob.floppy} Failed to decode saved file at {glob.db_path}")
 
-    def _scrape_sites(self, sites):
+    def _scrape_sites(self):
         """ For the given sites, scrape their data. """
-        for site in sites:
-            # TODO Filter out the bad apples if a website has no words
-            logging.info(f"{glob.web} Inspecting {site}...")
-            website = Website(site, self)
+        for site in self.sites:
+            logging.info(f"{glob.web} Inspecting {site.name}...")
             # We scrape a globally set number of pages per website
-            website.scrape(website.url)
-            self.sites.append(website)
-        
+            site.scrape(site.url)
+
     def _save_to_json(self):
         """ Saves the database to a json file. """
         with open(glob.db_path, "w") as outfile:
@@ -69,8 +64,13 @@ class WebsiteDatabase:
 
     def compute(self):
         """ Build our corpus of Chinese web pages and cluster them """
-        self._save_to_json()
         return cluster_pages(self.pages_data.values())
+    
+    def update_db(self):
+        """ Scrapes websites in global settings and updates database """
+        self._scrape_sites()
+        self._save_to_json()
+        return "Successfully updated the database!"
 
 
 class Website:
@@ -165,7 +165,7 @@ class Webpage:
         try:
             page = requests.get(self.url)
             return BeautifulSoup(page.content, 'lxml')
-        except requests.exceptions.ConnectionError or requests.exceptions.MaxRetryError:
+        except requests.exceptions.ConnectionError:
             logging.info(f'\t\t{glob.cry} Failed to connect to {self.url}')
 
     def _get_page_text(self):

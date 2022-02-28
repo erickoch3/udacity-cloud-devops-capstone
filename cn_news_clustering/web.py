@@ -1,12 +1,11 @@
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, render_template
 from flask.logging import create_logger
 import logging
 import pandas as pd
-import joblib
-
 from scrape_articles import WebsiteDatabase
-from globals import Globals as glob
+from params import Globals as glob
+
 
 app = Flask(__name__)
 LOG = create_logger(app)
@@ -15,7 +14,9 @@ LOG.setLevel(logging.INFO)
 
 @app.route("/update_db")
 def update_db():
-    html = f"<h3>Placeholder to Update Database</h3>"
+    webdb = WebsiteDatabase(glob.sites)
+    result = webdb.update_db()
+    html = f"<h3>Database Update</h3><p>{result}</p>"
     return html.format(format)
 
 
@@ -35,7 +36,6 @@ def get_topics():
     
     topics = pd.DataFrame(webdb.compute())
     # Ref: https://stackoverflow.com/questions/52644035/how-to-show-a-pandas-dataframe-into-a-existing-flask-html-table
-    # return render_template('simple.html', tables=[topics.to_html(classes='data')], titles=topics.columns.values)
     return render_template("simple.html", column_names=topics.columns.values, row_data=list(topics.values.tolist()),
                            zip=zip)
 
