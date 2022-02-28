@@ -43,10 +43,25 @@ jobs:
           command: |
             pip3 install pytest pytest-mock
             make test
+            
+  analyze:
+    docker:
+      - image: ewkoch3/base:test
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install-base-dependencies
+      - run:
+        name: run security scan
+        command: |
+          pip3 install bandit
+          python3 -m bandit cn_news_clustering/*
 
 workflows:
   default:
     jobs:
       - build
       - test:
+          requires: [build]
+      - analyze:
           requires: [build]
