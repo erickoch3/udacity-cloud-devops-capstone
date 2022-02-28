@@ -5,6 +5,7 @@
 version: 2
 
 commands:
+
   install-base-dependencies:
     description: Install dependencies for our app
     steps:
