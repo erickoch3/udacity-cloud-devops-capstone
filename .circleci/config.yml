@@ -48,5 +48,5 @@ workflows:
   default:
     jobs:
       - build
-      - test
+      - test:
           requires: [build]
