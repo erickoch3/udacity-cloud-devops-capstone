@@ -26,7 +26,7 @@ lint:
 	hadolint Dockerfile
 	# This is a linter for Python source code linter: https://www.pylint.org/
 	# This should be run from inside a virtualenv
-	pylint --disable=R,C,W1203,W1202 cn_news_clustering
+	pylint --disable=R,C,W1203,W1202,E0401 cn_news_clustering
 
 run:
 	# This command runs the web app locally for testing.
