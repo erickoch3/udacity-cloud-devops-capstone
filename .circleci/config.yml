@@ -55,7 +55,7 @@ jobs:
           name: run security scan
           command: |
             pip3 install bandit
-            python3 -m bandit cn_news_clustering/*
+            make scan
 
 workflows:
   default:
