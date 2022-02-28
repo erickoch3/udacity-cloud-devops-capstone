@@ -25,6 +25,7 @@ def home():
     html = "<h3>Chinese Military News Topics Home</h3>"
     return html.format(format)
 
+
 @app.route("/get_topics", methods=['GET'])
 def get_topics():
 
@@ -39,6 +40,7 @@ def get_topics():
     return render_template("simple.html", column_names=topics.columns.values, row_data=list(topics.values.tolist()),
                            zip=zip)
 
+
 if __name__ == "__main__":
     # load pretrained model as clf
-    app.run(host='0.0.0.0', port=80, debug=True) # specify port=80
+    app.run(host='0.0.0.0', port=80, debug=False) # specify port=80
