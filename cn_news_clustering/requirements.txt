@@ -1,0 +1,9 @@
+lxml
+cchardet
+jieba
+flask
+sklearn
+requests
+bs4
+pandas
+joblib
