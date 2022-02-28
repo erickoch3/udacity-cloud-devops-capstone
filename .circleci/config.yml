@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2
+version: 2.1
 
 commands:
 
@@ -25,7 +25,6 @@ jobs:
     steps:
       - checkout
       - install-base-dependencies
-      # run tests!
       - run:
           name: run lint
           command: |
