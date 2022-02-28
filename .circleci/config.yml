@@ -28,6 +28,7 @@ jobs:
       - run:
           name: run lint
           command: |
+            pip3 install pylint
             make lint
   
   test:
