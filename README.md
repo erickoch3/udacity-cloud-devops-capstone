@@ -36,7 +36,11 @@ The blue-green deployment pipeline will consist of the following:
 
 2. Full Scope
 
-
+The above enables us to continuously roll out updates to our app.
+However, to really take advantage of the possibilitiesof our app, we would set up 
+a daily Lambda service (on a timer) that scrapes specified sites and updates a database maiintained
+in an S3 bucket. The docker containers would read the database from the S3 bucket and use that
+database to output clusters.
 
 ### Overarching Diagram
 
