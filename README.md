@@ -44,7 +44,7 @@ database to output clusters.
 
 ### Overarching Diagram
 
-# TODO: Add one!
+TODO: Add one!
 
 ### Planning - Key Actions
 
@@ -96,3 +96,28 @@ We use Hadolint for our Dockerfile and pylint for the source code. These are run
 ```bash
 make lint
 ```
+
+### Deployment
+
+1. Set up Kubernetes Cluster Control Plane
+To start a deployment, you first need a Kubernetes Control Plane (and the master node therein). A Cloudformation template is included in .circleci.
+
+2. Set up Kubernetes Data Plane
+The next stup of setting up the Kubernetes cluster is getting nodes running in the data plane. A Cloudformation template is included in .circleci.
+After applying this template, you will have a NodeGroup and node(s) for the Data Plane. HOWEVER, these nodes will not yet be part of the cluster!
+There is a crucial next step. Please make sure your AMI is an AWS EKS AMI too :)
+
+3. Set up Kubeconfig
+To validate the need for the next step, use `aws eks update-kubeconfig` to gain kubectl access to the cluster and list nodes. There won't be any!
+
+4. Update aws-auth with NodeInstanceRole
+You must update the aws-auth ConfigMap with the NodeInstanceRole of each worker node! What does that mean?
+See: https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html.
+The AWS IAM Authenticator on the Control Plane enables access to the cluster. It gets its configuration from the aws-auth ConfigMap.
+What we're doing in this step is telling the Authenticator that the nodes' IAM role is kosher to access the cluster.
+Update the `aws-auth-cm.yaml` with the output from the DataPlane's NodeInstanceRole (as ARN).
+Next, run:
+`kubectl apply -f aws-auth-cm.yaml`
+To apply the ConfigMap.
+You can check its status with `kubectl describe configmap -n kube-system aws-auth`
+Wait a little while, and run `kubectl get nodes`, and you should be good to go!

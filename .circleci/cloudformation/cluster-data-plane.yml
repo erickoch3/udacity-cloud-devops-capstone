@@ -65,7 +65,7 @@ Parameters:
 
   NodeImageId:
     Type: String
-    Default: "ami-048ff3da02834afdc"
+    Default: "ami-07d3e51fccc6786ab"
     Description: (Optional) Specify your own custom image ID. This value overrides any AWS Systems Manager Parameter Store value specified above.
 
   NodeImageIdSSMParam:
@@ -75,7 +75,7 @@ Parameters:
 
   NodeInstanceType:
     Type: String
-    Default: t2.micro
+    Default: t2.medium
     AllowedValues:
       - t1.micro
       - t2.nano
@@ -83,7 +83,6 @@ Parameters:
       - t2.small
       - t2.medium
 
-  
     ConstraintDescription: Must be a valid EC2 instance type
     Description: EC2 instance type for the node instances
 
@@ -159,6 +158,18 @@ Resources:
       VpcId: !ImportValue 
         'Fn::Sub': '${ControlPlaneStackName}-VpcId'
 
+  NodeSecurityGroupFromControlPlaneIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow pods and worker Kubelets to receive communication from cluster control plane
+      FromPort: 0
+      GroupId: !Ref NodeSecurityGroup
+      IpProtocol: "-1"
+      SourceSecurityGroupId: !ImportValue 
+        'Fn::Sub': '${ControlPlaneStackName}-SecurityGroupID'
+      ToPort: 65535
+
   NodeSecurityGroupIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
     DependsOn: NodeSecurityGroup
@@ -175,12 +186,12 @@ Resources:
     DependsOn: NodeSecurityGroup
     Properties:
       Description: Allow pods to communicate with the cluster API Server
-      FromPort: 443
+      FromPort: 0
       GroupId: !ImportValue 
         'Fn::Sub': '${ControlPlaneStackName}-SecurityGroupID'
-      IpProtocol: tcp
+      IpProtocol: '-1'
       SourceSecurityGroupId: !Ref NodeSecurityGroup
-      ToPort: 443
+      ToPort: 65535
 
   ControlPlaneEgressToNodeSecurityGroup:
     Type: "AWS::EC2::SecurityGroupEgress"
@@ -206,32 +217,35 @@ Resources:
       IpProtocol: tcp
       ToPort: 443
 
-  NodeSecurityGroupFromControlPlaneIngress:
-    Type: "AWS::EC2::SecurityGroupIngress"
-    DependsOn: NodeSecurityGroup
-    Properties:
-      Description: Allow worker Kubelets and pods to receive communication from the cluster control plane
-      FromPort: 1025
-      GroupId: !Ref NodeSecurityGroup
-      IpProtocol: tcp
-      SourceSecurityGroupId: !ImportValue 
-        'Fn::Sub': '${ControlPlaneStackName}-SecurityGroupID'
-      ToPort: 65535
+  ### TEMPORARY FOR TESTING!!! ###
 
-  NodeSecurityGroupFromControlPlaneOn443Ingress:
+  NodeSecurityGroupSSHIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
     DependsOn: NodeSecurityGroup
     Properties:
-      Description: Allow pods running extension API servers on port 443 to receive communication from cluster control plane
-      FromPort: 443
-      GroupId: !Ref NodeSecurityGroup
+      Description: Allow pods to receive ssh traffic.
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 0.0.0.0/0
       IpProtocol: tcp
-      SourceSecurityGroupId: !ImportValue 
-        'Fn::Sub': '${ControlPlaneStackName}-SecurityGroupID'
-      ToPort: 443
+      GroupId: !Ref NodeSecurityGroup
+
+  NodeSecurityGroupAllEgress:
+    Type: "AWS::EC2::SecurityGroupEgress"
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow pods to send traffic to any destination.
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      GroupId: !Ref NodeSecurityGroup
+  
+  ###
 
   NodeLaunchTemplate:
     Type: "AWS::EC2::LaunchTemplate"
+    DependsOn: NodeSecurityGroup
     Properties:
       LaunchTemplateData:
         BlockDeviceMappings:
@@ -241,7 +255,7 @@ Resources:
               VolumeSize: !Ref NodeVolumeSize
               VolumeType: gp2
         IamInstanceProfile:
-          Arn: !GetAtt NodeInstanceProfile.Arn
+          Name: !Ref NodeInstanceProfile
         ImageId: !If
           - HasNodeImageId
           - !Ref NodeImageId
@@ -249,7 +263,7 @@ Resources:
         InstanceType: !Ref NodeInstanceType
         KeyName: !Ref KeyName
         SecurityGroupIds:
-        - !Ref NodeSecurityGroup
+          - !Ref NodeSecurityGroup
         UserData: !Base64
           "Fn::Sub": |
             #!/bin/bash
@@ -266,6 +280,7 @@ Resources:
             - IMDSv1Disabled
             - required
             - optional
+        
 
   NodeGroup:
     Type: "AWS::AutoScaling::AutoScalingGroup"
@@ -297,7 +312,7 @@ Outputs:
   NodeInstanceRole:
     Description: The node instance role
     Value: !GetAtt NodeInstanceRole.Arn
-  Export:
+    Export:
       Name: !Sub ${AWS::StackName}-NodeInstanceRoleArn
 
   NodeSecurityGroup:

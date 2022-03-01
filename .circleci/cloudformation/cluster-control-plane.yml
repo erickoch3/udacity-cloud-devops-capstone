@@ -135,8 +135,8 @@ Resources:
 
   PrivateRoute01:
     DependsOn:
-    - VPCGatewayAttachment
-    - NatGateway01
+      - VPCGatewayAttachment
+      - NatGateway01
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PrivateRouteTable01
@@ -145,8 +145,8 @@ Resources:
 
   PrivateRoute02:
     DependsOn:
-    - VPCGatewayAttachment
-    - NatGateway02
+      - VPCGatewayAttachment
+      - NatGateway02
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PrivateRouteTable02
@@ -168,16 +168,16 @@ Resources:
 
   NatGateway02:
     DependsOn:
-    - NatGatewayEIP2
-    - PublicSubnet02
-    - VPCGatewayAttachment
+      - NatGatewayEIP2
+      - PublicSubnet02
+      - VPCGatewayAttachment
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt 'NatGatewayEIP2.AllocationId'
       SubnetId: !Ref PublicSubnet02
       Tags:
-      - Key: Name
-        Value: !Sub '${AWS::StackName}-NatGatewayAZ2'
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-NatGatewayAZ2'
 
   NatGatewayEIP1:
     DependsOn:
@@ -205,6 +205,7 @@ Resources:
             Ref: AWS::Region
       CidrBlock:
         Ref: PublicSubnet01Block
+      MapPublicIpOnLaunch: true
       VpcId:
         Ref: VPC
       Tags:
@@ -223,6 +224,7 @@ Resources:
             Ref: AWS::Region
       CidrBlock:
         Ref: PublicSubnet02Block
+      MapPublicIpOnLaunch: true
       VpcId:
         Ref: VPC
       Tags:
@@ -314,9 +316,7 @@ Resources:
         - !Ref PublicSubnet02
         - !Ref PrivateSubnet01
         - !Ref PrivateSubnet02
-    DependsOn: [EKSIAMRole, PublicSubnet01, PublicSubnet02, PrivateSubnet01, PrivateSubnet02, ControlPlaneSecurityGroup]
-  
-  
+    DependsOn: [EKSIAMRole, PublicSubnet01, PublicSubnet02, PrivateSubnet01, PrivateSubnet02, ControlPlaneSecurityGroup]  
 
 Outputs:
 
