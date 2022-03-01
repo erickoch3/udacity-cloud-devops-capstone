@@ -1,0 +1,9 @@
+[{
+        "ParameterKey": "EKSIAMRoleName",
+        "ParameterValue": "MyEKSManager"
+    },
+    {
+        "ParameterKey": "ClusterName",
+        "ParameterValue": "MyEKSCluster"
+    }
+]

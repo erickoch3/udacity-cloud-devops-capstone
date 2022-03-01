@@ -1,0 +1,17 @@
+[{
+        "ParameterKey": "KeyName",
+        "ParameterValue": "aws_rsa_udacity_admin"
+    },
+    {
+        "ParameterKey": "ControlPlaneStackName",
+        "ParameterValue": "myControlPlane"
+    },
+    {
+        "ParameterKey": "ClusterName",
+        "ParameterValue": "MyEKSCluster"
+    },
+    {
+        "ParameterKey": "NodeGroupName",
+        "ParameterValue": "MyNodeGroup"
+    }
+]
