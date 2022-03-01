@@ -14,7 +14,7 @@ RUN pip install --upgrade pip &&\
     pip install --trusted-host pypi.python.org -r requirements.txt
 
 ## Step 4:
-# EXPOSE 80
+EXPOSE 80
 
 ## Step 5:
-# CMD ["python", "cn_news_clustering/web.py"]
+CMD ["python", "cn_news_clustering/web.py"]

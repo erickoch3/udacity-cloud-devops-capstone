@@ -3,8 +3,8 @@ from flask import Flask, render_template
 from flask.logging import create_logger
 import logging
 import pandas as pd
-from .scrape_articles import WebsiteDatabase
-from .params import Globals as glob
+from scrape_articles import WebsiteDatabase
+from params import Globals as glob
 
 
 app = Flask(__name__)

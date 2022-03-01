@@ -37,14 +37,42 @@ The blue-green deployment pipeline will consist of the following:
 2. Full Scope
 
 The above enables us to continuously roll out updates to our app.
-However, to really take advantage of the possibilitiesof our app, we would set up 
-a daily Lambda service (on a timer) that scrapes specified sites and updates a database maiintained
-in an S3 bucket. The docker containers would read the database from the S3 bucket and use that
+However, to really take advantage of the possibilities of our app, we would set up 
+a daily Lambda service (on a timer) that scrapes specified sites and updates a database maintained
+via RDS. The docker containers would read the database from RDS and use that
 database to output clusters.
 
 ### Overarching Diagram
 
 # TODO: Add one!
+
+### Planning - Key Actions
+
+#### Simple Scope
+- [x] Design and Build Basic App (Clusterinig)
+- [x] Dockerize Application
+- [x] Create CircleCI Pipeline
+- [x] Add Simple Unit Test and Testing Stage
+- [x] Add Security Scanning
+- [x] Build Kubernetes Control Plane with Cloudformation
+- [x] Build Kubernetes Data Plane wiith Cloudformation
+- [x] Push Docker Application to Hub
+- [ ] Manually Deploy Application to Kubernetes
+- [ ] Automate Push and Deploy in CircleCI
+- [ ] Add Smoke Testing
+- [ ] Add Rollback Steps for Failure
+- [ ] Implement Blue-Green Deployment (Shift Traffic)
+- [ ] Add Cleanup Stage
+- 
+
+#### Full Scope
+- [ ] Add Database for News Articles
+- [ ] Add Storage for Model
+- [ ] Implement Date Tagging of Articles
+- [ ] Add Lambda Service to Scrape Daily for new Articles
+- [ ] Point Web App to RDS
+- [ ] Add Clustering of Daily Articles
+- [ ] Improve UI
 
 ### Dependencies
 For this project, set up a virtual environment for consistency:

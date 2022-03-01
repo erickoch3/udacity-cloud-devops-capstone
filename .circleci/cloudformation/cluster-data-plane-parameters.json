@@ -1,6 +1,6 @@
 [{
         "ParameterKey": "KeyName",
-        "ParameterValue": "aws_rsa_udacity_admin"
+        "ParameterValue": "eks_admin"
     },
     {
         "ParameterKey": "ControlPlaneStackName",
