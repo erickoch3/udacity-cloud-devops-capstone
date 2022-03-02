@@ -124,12 +124,17 @@ Wait a little while, and run `kubectl get nodes`, and you should be good to go!
 
 5. Create a Replicaset
 We specify a replicaset for our deployment in our kubernetes folder named `clustering-deploy.yaml`. Upon deploying this replicaset, kubernetes
-will automatically create two pods with our container running.
+will automatically create two pods with our container running. We use the blue-green version to specify a particular deployment.
+
+We use envsubst to set the color.
+
+`./kubernetes/deploy-blue-green.sh blue`
 
 6. Create a Load Balancer to expose the deployment
 We create a Cluster IP with Kubernetes using our `loadbalancer.yml` manifest. 
 
 `kubectl create -f kubernetes/loadbalancer.yaml`
+`./kubernetes/update_load_balancer.sh blue`
 
 7. Create Ingress Controls
 We need to set up an Ingress service on Kubernetes to ensure external requests can access any webpage. We'll use `ingress.yaml`.
@@ -142,3 +147,12 @@ Let's grab our external IP (DNS name) to check on our deployment.
 `kubectl get service/clustering-service-loadbalancer |  awk {'print $1" " $2 " " $4 " " $5'} | column -t`
 
 If you try connecting to the IP/hostname, you should be good to go!
+
+### Testing
+
+We have two load balancers set up, a main load balancer routed to:
+`sinoinsight.com`
+as well as a testing load balancer without a pretty DNS:
+`a00d1e37d2cf14c77a6ce2447da47529-1852105403.us-east-1.elb.amazonaws.com`.
+
+To test, we simply curl the testing load balancer.

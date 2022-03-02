@@ -5,7 +5,8 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: clustering
+    app: clustering-$COLOR_ACTIVE
+    color: $COLOR_ACTIVE
   ports:
     - protocol: TCP
       port: 80

@@ -6,24 +6,24 @@ kind: Deployment
 metadata:
   name: clustering-deployment-$COLOR_TEST
   labels:
-    app: clustering
+    app: clustering-$COLOR_TEST
     color: $COLOR_TEST
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: clustering
+      app: clustering-$COLOR_TEST
       color: $COLOR_TEST
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: clustering
+        app: clustering-$COLOR_TEST
         color: $COLOR_TEST
     spec:
       containers:
-      - name: clustering
+      - name: clustering-$COLOR_TEST
         image: ewkoch3/base:cn_news_clusters
         imagePullPolicy: IfNotPresent
         resources:
