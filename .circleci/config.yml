@@ -123,7 +123,6 @@ jobs:
         command: |
           export dockerpath="ewkoch3/base"
           export tag="cn_news_clusters"
-          docker pull $dockerpath:$tag
           docker build . --tag=$tag
           echo "$DOCKER_PWD" | docker login --username $DOCKER_LOGIN --password-stdin
           docker tag $tag $dockerpath:$tag
