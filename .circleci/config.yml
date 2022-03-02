@@ -130,6 +130,8 @@ jobs:
             export tag="cn_news_clusters"
             export dockerpath="$username/$repo_name:$tag"
             export name="clustering"
+            mkdir ~/.aws
+            echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
             export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
               | cut -d " " -f 4)
             kubectl config view
