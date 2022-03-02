@@ -1,6 +1,8 @@
 # Chinese News Clustering
 
-A DevOps project to demonstrate auto-deploying a microservice application using Docker via blue-green deployment.
+A DevOps project to demonstrate auto-deploying a microservice application using Docker via blue-green deployment. In particular, we deploy a personally built clustering application to generate clusters of Chinese news articles. 
+
+In this project's initial (simple) scope, I have locally scraped the articles and uploaded them as part of the container. In the future, I plan to implement a database as described below.
 
 ## Design
 
@@ -12,11 +14,12 @@ Within the simple scope, we upload a database of Chinese news files scraped from
 A call to the url, `http://[url]/get_topics`, will return clusters of Chinese news articles from the database
 using KMeans clustering from sklearn.
 
-Our focus is less on the application and more on our deployment process.
-Once you set up CI/CD, it's much easier to make and test changes to eventually reach the full scope!
+Our focus is less on the application and more on our deployment process. Once you set up CI/CD, it's much easier to make and test changes to eventually reach the full scope!
 
 #### Pipeline
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html
+
+Prior to pipeline deployment, we set up a Kubernetes (EKS) cluster to host the pods using CloudFormation.
 
 The blue-green deployment pipeline will consist of the following:
 * Build
@@ -25,22 +28,20 @@ The blue-green deployment pipeline will consist of the following:
     - Run simple unit tests
 * Scan
     - Analyze for security risks.
-* Deploy Infrastructure
+* Stage Infrastructure
     - Push Container: Upload Docker image to image repository.
-    - Deploy Cluster: Use CloudFormation to deploy Kubernetes cluster and nodegroups.
     - Deploy Container: Use CloudFormation to deploy a new container in a Kubernetes cluster.
 * Smoke Test
-    - Use Locust to test the container in the Kubernetes cluster.
-* Cloudfront Update
-    - If it passes, update Cloudfront to point to the new container.
+    - Use a secondary testing load balancer to publically check access to the staged deployment.
+* Deploy (Load Balancer Update)
+    - If it passes, update the load balancer to point to the new container.
+* Cleanup
+    - After updating the load balancer, remove the old deployment.
 
 2. Full Scope
 
 The above enables us to continuously roll out updates to our app.
-However, to really take advantage of the possibilities of our app, we would set up 
-a daily Lambda service (on a timer) that scrapes specified sites and updates a database maintained
-via RDS. The docker containers would read the database from RDS and use that
-database to output clusters.
+However, to really take advantage of the possibilities of our app, we would set up a daily Lambda service (on a timer) that scrapes specified sites and updates a database maintained via RDS. The docker containers would read the database from RDS and use that database to output clusters.
 
 ### Overarching Diagram
 
@@ -58,14 +59,13 @@ TODO: Add one!
 - [x] Build Kubernetes Data Plane wiith Cloudformation
 - [x] Push Docker Application to Hub
 - [x] Manually Deploy Application to Kubernetes
-- [ ] Automate Push and Deploy in CircleCI
-- [ ] Add Smoke Testing
-- [ ] Add Rollback Steps for Failure
-- [ ] Implement Blue-Green Deployment (Shift Traffic)
-- [ ] Add Cleanup Stage
-- 
+- [x] Automate Push and Deploy in CircleCI
+- [x] Add Smoke Testing
+- [x] Add Rollback Steps for Failure
+- [x] Implement Blue-Green Deployment (Shift Traffic)
+- [x] Add Cleanup Stage
 
-#### Full Scope
+#### Full Scope (Future - After Course)
 - [ ] Add Database for News Articles
 - [ ] Add Storage for Model
 - [ ] Implement Date Tagging of Articles
@@ -130,21 +130,22 @@ We use envsubst to set the color.
 
 `./kubernetes/deploy-blue-green.sh blue`
 
+In our pipeline, we get the current deployment with `source kubernetes/get_current_deployment.sh` to get the `COLOR_ACTIVE` and `COLOR_TEST` variables. We then run `kubernetes/stage_for_deployment.sh` to deploy the TEST environment.
+
 6. Create a Load Balancer to expose the deployment
-We create a Cluster IP with Kubernetes using our `loadbalancer.yml` manifest. 
-
-`kubectl create -f kubernetes/loadbalancer.yaml`
-`./kubernetes/update_load_balancer.sh blue`
-
-7. Create Ingress Controls
-We need to set up an Ingress service on Kubernetes to ensure external requests can access any webpage. We'll use `ingress.yaml`.
+We create two Load Balancers with Kubernetes included in our `ingress.yaml` manifest. 
 
 `kubectl apply -f kubernetes/ingress.yaml`
+`./kubernetes/update_load_balancer.sh blue`
+
+For our actual deployment, we've already created both a test and an active (main) load balanacer. We simply use Kubernetes' declarative manifest to adjust the main load balancer to point toward the TEST deployment, thereby making it active.
+
+This manifest/script additionally sets ingress controls to allow access to any webpage.
 
 8. Check Deployment!
 Let's grab our external IP (DNS name) to check on our deployment. 
 
-`kubectl get service/clustering-service-loadbalancer |  awk {'print $1" " $2 " " $4 " " $5'} | column -t`
+`kubectl get service/clustering-service-main |  awk {'print $1" " $2 " " $4 " " $5'} | column -t`
 
 If you try connecting to the IP/hostname, you should be good to go!
 
@@ -155,4 +156,4 @@ We have two load balancers set up, a main load balancer routed to:
 as well as a testing load balancer without a pretty DNS:
 `a00d1e37d2cf14c77a6ce2447da47529-1852105403.us-east-1.elb.amazonaws.com`.
 
-To test, we simply curl the testing load balancer.
+To test a staged environment, we simply curl the testing load balancer.
