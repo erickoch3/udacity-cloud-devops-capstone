@@ -152,10 +152,10 @@ jobs:
             # fi
             pwd
             ls
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - ~/.env
+      # - persist_to_workspace:
+      #     root: ~/
+      #     paths:
+      #       - ~/.env
 
   smoke_test:
     docker:
