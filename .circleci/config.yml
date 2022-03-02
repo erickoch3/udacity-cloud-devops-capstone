@@ -138,6 +138,9 @@ jobs:
       - run:
           name: Stage a new deployment.
           command: |
+            ls -al
+            cat .env
+            echo $COLOR_ACTIVE
             source .env
             kubectl config view
             kubectl config use-context $CONTEXT
