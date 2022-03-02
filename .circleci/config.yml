@@ -44,6 +44,8 @@ commands:
             export CONTEXT=$(aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME \
               | cut -d " " -f 4)
             echo CONTEXT=$CONTEXT >> .env
+            cat .env
+            kubectl config view
 
             ### Get current deployment information ###
             chmod +x ./kubernetes/get_current_deployment.sh
@@ -135,7 +137,7 @@ jobs:
             # export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
             #   | cut -d " " -f 4)
             kubectl config view
-            kubectl config use-context $context
+            kubectl config use-context $CONTEXT
             kubectl get svc
             kubectl get pods
             chmod +x ./kubernetes/get_current_deployment.sh ./kubernetes/stage_for_deployment.sh ./kubernetes/run_smoke_test.sh ./kubernetes/cleanup.sh
