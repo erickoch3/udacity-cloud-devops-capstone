@@ -174,7 +174,7 @@ jobs:
             cat ~/repo/.env
             source .env
             echo $COLOR_TEST
-            if $(./kubernetes/run_smoke_test.sh) | grep "Success"
+            if ./kubernetes/run_smoke_test.sh | grep "Success"
             then
                 return 0
             else
