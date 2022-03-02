@@ -103,6 +103,19 @@ jobs:
             pip3 install bandit
             make scan
 
+  push-container:
+    machine:
+    steps:
+     - checkout
+     - run:
+        name: Build and tag container, then push to dockerhub
+        command: |
+          docker build . --tag=$tag
+          echo "$DOCKER_PWD" | docker login --username $DOCKER_LOGIN --password-stdin
+          docker tag $tag $dockerpath:$tag
+          docker push "$dockerpath:$tag"
+          docker push "$dockerpath:$tag"
+
   deploy:
     docker:
       - image: python:3.7-alpine3.11
@@ -110,16 +123,6 @@ jobs:
     steps:
       - checkout
       - install-alpine-dependencies
-      - run:
-          name: Upload container to Dockerhub
-          command: |
-            rc-service docker start
-            export tag="cn_news_clusters"
-            export dockerpath="ewkoch3/base"
-            docker build . --tag=$tag
-            docker login --username=$DOCKER_LOGIN --password=$DOCKER_PWD
-            docker tag $tag $dockerpath:$tag
-            docker push "$dockerpath:$tag"
       - run:
           name: Deploy Docker Container to Kubernetes
           command: |
@@ -142,8 +145,10 @@ workflows:
           requires: [build]
       - analyze:
           requires: [build]
-      - deploy:
+      - push-container:
           requires: [test, analyze]
+      - deploy:
+          requires: [push-container]
           filters:
             branches:
               only: ["main"]
