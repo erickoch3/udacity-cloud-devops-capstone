@@ -176,7 +176,7 @@ jobs:
             else
                 return 1
             fi
-      - destory-test-environment-on-fail
+      - destroy-test-environment-on-fail
 
   deploy:
     docker:
