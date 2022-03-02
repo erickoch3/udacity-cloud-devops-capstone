@@ -105,8 +105,8 @@ jobs:
      - run:
         name: Build and tag container, then push to dockerhub
         command: |
-          export dockerpath=ewkoch/base
-          export tag=cn_news_clusters
+          export dockerpath="ewkoch3/base"
+          export tag="cn_news_clusters"
           docker build . --tag=$tag
           echo "$DOCKER_PWD" | docker login --username $DOCKER_LOGIN --password-stdin
           docker tag $tag $dockerpath:$tag
