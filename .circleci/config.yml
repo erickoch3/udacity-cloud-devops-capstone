@@ -33,20 +33,20 @@ commands:
           name: Set environment variables
           command: |
             ### Initialize .env ###
-            echo CLUSTER_NAME="MyEKSCluster" > .env
-            echo DOCKERPATH="$DOCKER_LOGIN/$REPO_NAME:$TAG"
-            echo REPO_NAME="base" >> .env
-            echo TAG="cn_news_clusters" >> .env
-
+            echo export CLUSTER_NAME="MyEKSCluster" > .env
+            echo export DOCKERPATH="$DOCKER_LOGIN/$REPO_NAME:$TAG"
+            echo export REPO_NAME="base" >> .env
+            echo export TAG="cn_news_clusters" >> .env
+            source .env
             ### Set up AWS Credentials ###
             mkdir ~/.aws
             echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
             export CONTEXT=$(aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME \
               | cut -d " " -f 4)
-            echo CONTEXT=$CONTEXT >> .env
+            echo export CONTEXT=$CONTEXT >> .env
             cat .env
+            source .env
             kubectl config view
-
             ### Get current deployment information ###
             chmod +x ./kubernetes/get_current_deployment.sh
             source ./kubernetes/get_current_deployment.sh
