@@ -52,9 +52,25 @@ commands:
             source ./kubernetes/get_current_deployment.sh
             echo COLOR_ACTIVE=$COLOR_ACTIVE >> .env
             echo COLOR_TEST=$COLOR_TEST >> .env
+            source .env
 
-            
-            
+  destroy-test-environment-on-fail:
+    description: Deletes the test environment from the cluster
+    steps:
+      - run:
+          name: Delete test environment.
+          when: on_fail
+          command: |
+            ./kubernetes/cleanup.sh $COLOR_TEST
+
+  cleanup-old-environment:
+    description: Deletes the previously active environment
+    steps:
+      - run:
+          name: Delete previously active environment.
+          command: |
+            ./kubernetes/cleanup.sh $COLOR_ACTIVE
+
 jobs:
 
   build:
@@ -122,37 +138,14 @@ jobs:
       - run:
           name: Stage a new deployment.
           command: |
-            pwd
-            ls
-            ls ~
             source .env
-            # export cluster_name="MyEKSCluster"
-            # export aws_region="us-east-1"
-            # export username="ewkoch3"
-            # export repo_name="base"
-            # export tag="cn_news_clusters"
-            # export dockerpath="$username/$repo_name:$tag"
-            # mkdir ~/.aws
-            # echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
-            # export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
-            #   | cut -d " " -f 4)
             kubectl config view
             kubectl config use-context $CONTEXT
             kubectl get svc
             kubectl get pods
             chmod +x ./kubernetes/get_current_deployment.sh ./kubernetes/stage_for_deployment.sh ./kubernetes/run_smoke_test.sh ./kubernetes/cleanup.sh
-            # source ./kubernetes/get_current_deployment.sh
-            # ./kubernetes/stage_for_deployment.sh
-            # if $(./kubernetes/run_smoke_test.sh) | grep "Success"
-            # then
-            #     ./kubernetes/set_active_deployment.sh $COLOR_TEST
-            #     ./kubernetes/cleanup.sh $COLOR_ACTIVE
-            #     return 0
-            # else
-            #     ./kubernetes/cleanup.sh $COLOR_TEST
-            #     return 1
-            # fi
-            echo $COLOR_ACTIVE
+            ./kubernetes/stage_for_deployment.sh
+            echo active is $COLOR_ACTIVE
             pwd
             ls
       - persist_to_workspace:
@@ -177,7 +170,39 @@ jobs:
             ls
             cat ~/repo/.env
             echo $COLOR_TEST
-      
+            if $(./kubernetes/run_smoke_test.sh) | grep "Success"
+            then
+                return 0
+            else
+                return 1
+            fi
+      - destory-test-environment-on-fail
+
+  deploy:
+    docker:
+      - image: amazon/aws-cli
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install-aws-cli-dependencies
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Deploy Docker Container to Kubernetes
+          command: |
+            ./kubernetes/set_active_deployment.sh $COLOR_TEST
+      - destory-test-environment-on-fail
+  
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install-aws-cli-dependencies
+      - attach_workspace:
+          at: ~/
+      - destroy-old-environment
 
 workflows:
   default:
@@ -196,10 +221,10 @@ workflows:
               only: ["main"]
       - smoke_test:
           requires: [stage]
-      # - deploy:
-      #     requires: [smoke_test]
-      # - cleanup:
-      #     requires: [deploy]
+      - deploy:
+          requires: [smoke_test]
+      - cleanup:
+          requires: [deploy]
 
 
 
