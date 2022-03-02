@@ -57,7 +57,7 @@ TODO: Add one!
 - [x] Build Kubernetes Control Plane with Cloudformation
 - [x] Build Kubernetes Data Plane wiith Cloudformation
 - [x] Push Docker Application to Hub
-- [ ] Manually Deploy Application to Kubernetes
+- [x] Manually Deploy Application to Kubernetes
 - [ ] Automate Push and Deploy in CircleCI
 - [ ] Add Smoke Testing
 - [ ] Add Rollback Steps for Failure

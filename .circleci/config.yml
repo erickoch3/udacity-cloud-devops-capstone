@@ -16,6 +16,25 @@ commands:
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
             chmod +x /bin/hadolint
 
+  install-aws-cli-dependencies:
+    description: Install dependencies for aws-cli docker and kubernetes
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip
+            cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+            [kubernetes]
+            name=Kubernetes
+            baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+            enabled=1
+            gpgcheck=1
+            repo_gpgcheck=1
+            gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+            exclude=kubelet kubeadm kubectl
+            EOF
+            sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
 jobs:
 
   build:
@@ -57,6 +76,36 @@ jobs:
             pip3 install bandit
             make scan
 
+  deploy:
+    docker:
+      - image: amazon/aws-cli
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install-aws-cli-dependencies
+      - run:
+          name: Upload container to Dockerhub
+          command: |
+            export tag="cn_news_clusters"
+            export dockerpath="ewkoch3/base"
+            docker build . --tag=$tag
+            docker login --username=$DOCKER_LOGIN --password=$DOCKER_PWD
+            docker tag $tag $dockerpath:$tag
+            docker push "$dockerpath:$tag"
+      - run:
+          name: Deploy Docker Container to Kubernetes
+          command: |
+            export cluster_name="MyEKSCluster"
+            export aws_region="us-east-1"
+            export username="ewkoch3"
+            export repo_name="base"
+            export tag="cn_news_clusters"
+            export dockerpath="$username/$repo_name:$tag"
+            export name="clustering"
+            aws eks update-kubeconfig --region $aws_region --name $cluster_name
+            kubectl get svc
+            kubectl get pods
+
 workflows:
   default:
     jobs:
@@ -65,3 +114,8 @@ workflows:
           requires: [build]
       - analyze:
           requires: [build]
+      - deploy:
+          requires: [test, analyze]
+          filters:
+            branches:
+              only: ["main"]
