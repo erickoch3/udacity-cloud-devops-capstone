@@ -1,3 +1,5 @@
+{% include 'index.html' %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,26 +11,21 @@
 
 <body>
 
-    <table>
-        <tr>
-            {% for col in column_names %}
-            <th>{{col}}</th>
+    <table style="color:#78909c; background-color:rgb(29, 29, 24)">
+        <tbody style="color:rgb(20, 18, 16)">
+            <tr>
+                {% for col in column_names %}
+                <th style="background-color:rgb(31, 29, 29); color:#78909c; text-align:center">{{col}}</th>
+                {% endfor %}
+            </tr>
+            {% for row in row_data %}
+            <tr>
+                {% for col, row_ in zip(column_names, row) %}
+                <td style="background-color:rgb(31, 29, 29); color:#78909c; text-align:center">{{row_}}</td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% for row in row_data %}
-        <tr>
-            {% for col, row_ in zip(column_names, row) %} {% if col == link_column %}
-            <td>
-                <button type="submit" value={{ row_ }} name="person_id" form="patient_form" class="patient_button">
-                    {{ row_ }}
-                </button>
-            </td>
-            {% else %}
-            <td>{{row_}}</td>
-            {% endif %} {% endfor %}
-        </tr>
-        {% endfor %}
-
+        </tbody>
     </table>
 </body>
 

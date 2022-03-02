@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 from flask.logging import create_logger
 import logging
 import pandas as pd
@@ -22,8 +22,9 @@ def update_db():
 
 @app.route("/")
 def home():
-    html = "<h3>Chinese Military News Topics Home</h3>"
-    return html.format(format)
+    # html = "<h3>Chinese Military News Topics Home</h3>"
+    return render_template("home.html")
+    # return html.format(format)
 
 
 @app.route("/get_topics", methods=['GET'])
