@@ -155,7 +155,7 @@ jobs:
           paths:
             - project/.env
 
-  deploy:
+  smoke_test:
     docker:
       - image: amazon/aws-cli
     working_directory: ~/repo
@@ -188,10 +188,10 @@ workflows:
               only: ["main"]
       - smoke_test:
           requires: [stage]
-      - deploy:
-          requires: [smoke_test]
-      - cleanup:
-          requires: [deploy]
+      # - deploy:
+      #     requires: [smoke_test]
+      # - cleanup:
+      #     requires: [deploy]
 
 
 
