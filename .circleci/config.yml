@@ -172,6 +172,7 @@ jobs:
             pwd
             ls
             cat ~/repo/.env
+            source .env
             echo $COLOR_TEST
             if $(./kubernetes/run_smoke_test.sh) | grep "Success"
             then
@@ -193,6 +194,7 @@ jobs:
       - run:
           name: Deploy Docker Container to Kubernetes
           command: |
+            source .env
             ./kubernetes/set_active_deployment.sh $COLOR_TEST
       - destroy-test-environment-on-fail
   
@@ -205,6 +207,10 @@ jobs:
       - install-aws-cli-dependencies
       - attach_workspace:
           at: ~/
+      - run:
+          name: Update environment.
+          command: |
+            source .env
       - cleanup-old-environment
 
 workflows:
