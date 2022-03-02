@@ -130,7 +130,9 @@ jobs:
             export tag="cn_news_clusters"
             export dockerpath="$username/$repo_name:$tag"
             export name="clustering"
-            aws eks update-kubeconfig --region $aws_region --name $cluster_name
+            export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
+              | cut -d " " -f 4)
+            kubectl config use-context $context
             kubectl get svc
             kubectl get pods
 
