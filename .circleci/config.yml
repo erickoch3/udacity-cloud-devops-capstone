@@ -140,7 +140,7 @@ workflows:
           requires: [build]
       - analyze:
           requires: [build]
-      - push-container:
+      - push_container:
           requires: [test, analyze]
       - deploy:
           requires: [push-container]
