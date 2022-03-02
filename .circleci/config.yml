@@ -150,10 +150,12 @@ jobs:
             #     ./kubernetes/cleanup.sh $COLOR_TEST
             #     return 1
             # fi
+            pwd
+            ls
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.env
+            - ~/.env
 
   smoke_test:
     docker:
@@ -167,22 +169,24 @@ jobs:
       - run:
           name: Deploy Docker Container to Kubernetes
           command: |
-            cat ~/project/.env
+            pwd
+            ls
+            cat ~/.env
             echo $COLOR_TEST
       
 
 workflows:
   default:
     jobs:
-      - build
-      - test:
-          requires: [build]
-      - analyze:
-          requires: [build]
-      - push_container:
-          requires: [test, analyze]
+      # - build
+      # - test:
+      #     requires: [build]
+      # - analyze:
+      #     requires: [build]
+      # - push_container:
+      #     requires: [test, analyze]
       - stage:
-          requires: [push_container]
+          # requires: [push_container]
           filters:
             branches:
               only: ["main"]
