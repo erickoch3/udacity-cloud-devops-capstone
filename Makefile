@@ -27,7 +27,7 @@ lint:
 	hadolint Dockerfile
 	# This is a linter for Python source code linter: https://www.pylint.org/
 	# This should be run from inside a virtualenv
-	pylint --disable=R,C,W1203,W1202,E0401,W1514 cn_news_clustering
+	pylint --disable=R,C,W1203,W1202,E0401,W1514 cn_news_cluster
 	
 scan:
 	# Use bandit to scan the app for security issues

@@ -1,4 +1,3 @@
-from .scrape_articles import WebsiteDatabase
 from cn_news_cluster.web import app
 
 
