@@ -25,12 +25,7 @@ commands:
             yum install -y tar gzip
             echo -e "[kubernetes]\nname=Kubernetes\nbaseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg\nexclude=kubelet kubeadm kubectl\n" >> /etc/yum.repos.d/kubernetes.repo
             yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-            yum install -y yum-utils
-            yum-config-manager \
-              --add-repo \
-              https://download.docker.com/linux/centos/docker-ce.repo
-            yum-config-manager --save --setopt=docker-ce-stable.skip_if_unavailable=true
-            yum install docker-ce docker-ce-cli containerd.io
+
 
   install-node-dependencies:
     description: Install dependencies we use on node docker
@@ -118,11 +113,11 @@ jobs:
 
   deploy:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     working_directory: ~/repo
     steps:
       - checkout
-      - install-alpine-dependencies
+      - install-aws-cli-dependencies
       - run:
           name: Deploy Docker Container to Kubernetes
           command: |
