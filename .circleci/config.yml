@@ -138,7 +138,7 @@ jobs:
       - install-aws-cli-dependencies
       - setup-deployment-environment
       - run:
-          name: Stage a new deployment.
+          name: Stage a new deployment environment.
           command: |
             ls -al
             cat .env
@@ -169,7 +169,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Deploy Docker Container to Kubernetes
+          name: Smoke test our staged environment
           command: |
             pwd
             ls
@@ -194,7 +194,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Deploy Docker Container to Kubernetes
+          name: Point loadbalancer to staged environment
           command: |
             source .env
             ./kubernetes/set_active_deployment.sh $COLOR_TEST
