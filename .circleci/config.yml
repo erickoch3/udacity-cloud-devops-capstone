@@ -191,7 +191,7 @@ jobs:
           name: Deploy Docker Container to Kubernetes
           command: |
             ./kubernetes/set_active_deployment.sh $COLOR_TEST
-      - destory-test-environment-on-fail
+      - destroy-test-environment-on-fail
   
   cleanup:
     docker:
