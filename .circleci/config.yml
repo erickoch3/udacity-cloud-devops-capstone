@@ -150,12 +150,13 @@ jobs:
             #     ./kubernetes/cleanup.sh $COLOR_TEST
             #     return 1
             # fi
+            echo name=$name > .env
             pwd
             ls
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - ~/.env
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ~/repo/.env
 
   smoke_test:
     docker:
@@ -171,7 +172,7 @@ jobs:
           command: |
             pwd
             ls
-            cat ~/.env
+            cat ~/repo/.env
             echo $COLOR_TEST
       
 
