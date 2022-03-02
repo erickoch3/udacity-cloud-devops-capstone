@@ -11,4 +11,4 @@ aws_region="us-east-1"
 aws eks update-kubeconfig --region $aws_region --name $cluster_name
 
 envsubst < kubernetes/clustering-deployment-blue-green.yaml | kubectl apply -f -
-
+envsubst < kubernetes/ingress.yaml | kubectl apply -f -
