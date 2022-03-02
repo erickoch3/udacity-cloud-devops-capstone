@@ -131,7 +131,7 @@ jobs:
 
   stage:
     docker:
-      - image: amazon/aws-cli
+      - image: ewkoch3/base:aws-cli
     working_directory: ~/repo
     steps:
       - checkout
@@ -161,7 +161,7 @@ jobs:
 
   smoke_test:
     docker:
-      - image: amazon/aws-cli
+      - image: ewkoch3/base:aws-cli
     working_directory: ~/repo
     steps:
       - checkout
@@ -186,7 +186,7 @@ jobs:
 
   deploy:
     docker:
-      - image: amazon/aws-cli
+      - image: ewkoch3/base:aws-cli
     working_directory: ~/repo
     steps:
       - checkout
@@ -202,7 +202,7 @@ jobs:
   
   cleanup:
     docker:
-      - image: amazon/aws-cli
+      - image: ewkoch3/base:aws-cli
     working_directory: ~/repo
     steps:
       - checkout
