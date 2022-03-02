@@ -113,7 +113,7 @@ jobs:
       - run:
           name: Upload container to Dockerhub
           command: |
-            systemctl start docker
+            run service docker start
             export tag="cn_news_clusters"
             export dockerpath="ewkoch3/base"
             docker build . --tag=$tag
