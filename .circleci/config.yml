@@ -61,6 +61,7 @@ commands:
           name: Delete test environment.
           when: on_fail
           command: |
+            source .env
             ./kubernetes/cleanup.sh $COLOR_TEST
 
   cleanup-old-environment:
@@ -69,6 +70,7 @@ commands:
       - run:
           name: Delete previously active environment.
           command: |
+            source .env
             ./kubernetes/cleanup.sh $COLOR_ACTIVE
 
 jobs:
@@ -176,9 +178,9 @@ jobs:
             echo $COLOR_TEST
             if ./kubernetes/run_smoke_test.sh | grep "Success"
             then
-                return 0
+                exit 0
             else
-                return 1
+                exit 1
             fi
       - destroy-test-environment-on-fail
 
@@ -207,10 +209,6 @@ jobs:
       - install-aws-cli-dependencies
       - attach_workspace:
           at: ~/
-      - run:
-          name: Update environment.
-          command: |
-            source .env
       - cleanup-old-environment
 
 workflows:
