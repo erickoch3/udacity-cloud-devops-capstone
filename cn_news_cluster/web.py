@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from flask.logging import create_logger
 import logging
 import pandas as pd
@@ -11,6 +11,7 @@ app = Flask(__name__)
 LOG = create_logger(app)
 LOG.setLevel(logging.INFO)
 
+DEFAULT_CLUSTERS = 10
 
 @app.route("/update_db")
 def update_db():
@@ -27,16 +28,20 @@ def home():
     # return html.format(format)
 
 
-@app.route("/get_topics", methods=['GET'])
+@app.route("/get_topics", methods=['GET','POST'])
 def get_topics():
-
+    try:
+        num_clusters = int(request.args['num_clusters'])
+    except ValueError:
+        num_clusters = DEFAULT_CLUSTERS
+    print(num_clusters)
     webdb = WebsiteDatabase(glob.sites)
     # Log the websites that we're using for topics
     sites = '\n\t'.join([site.name for site in webdb.sites])
     # TO DO:  Log the output prediction value
     LOG.info(f"Sites: \n{sites}")
     
-    topics = pd.DataFrame(webdb.compute())
+    topics = pd.DataFrame(webdb.compute(num_clusters))
     # Ref: https://stackoverflow.com/questions/52644035/how-to-show-a-pandas-dataframe-into-a-existing-flask-html-table
     return render_template("simple.html", column_names=topics.columns.values, row_data=list(topics.values.tolist()),
                            zip=zip)

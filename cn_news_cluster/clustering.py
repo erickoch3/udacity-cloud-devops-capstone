@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from cn_news_cluster.lexical_analysis import tokenize
 
 
-def train_kmeans_model(data):
+def train_kmeans_model(data, num_clusters):
     """Given a dataset of webpages' corpus, trains and saves the kmeans
     clustering model.
 
@@ -21,14 +21,14 @@ def train_kmeans_model(data):
     vectorizer = TfidfVectorizer(use_idf=True, stop_words=glob.chinese_stopwords, tokenizer=tokenize)
     tf_idf_matrix = vectorizer.fit_transform(data)
     # We create a model and fit it based on our matrix
-    km = cluster.KMeans(n_clusters=glob.n_clusters)
+    km = cluster.KMeans(n_clusters=num_clusters)
     km.fit(tf_idf_matrix)
     # Save our model for later use.
     joblib.dump(km, glob.model_path)
     return vectorizer, km
 
 
-def cluster_pages(data):
+def cluster_pages(data, num_clusters=10):
     """Clusters a list of webpages' corpus in order to find topics.
 
     Args:
@@ -37,11 +37,11 @@ def cluster_pages(data):
     Returns:
         dict: The top words from each cluster
     """
-    vectorizer, model = train_kmeans_model(data)
+    vectorizer, model = train_kmeans_model(data, num_clusters)
     output = dict()
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names()
-    for i in range(glob.n_clusters):
+    for i in range(num_clusters):
         output[f"Cluster {i}"] = [
             terms[ind] for ind in order_centroids[i, :glob.words_per_cluster]
         ]

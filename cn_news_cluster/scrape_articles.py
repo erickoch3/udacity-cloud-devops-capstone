@@ -62,9 +62,9 @@ class WebsiteDatabase:
                 self.invalid_sites[key] = list(self.invalid_sites[key])
             outfile.write(json.dumps(self.invalid_sites))
 
-    def compute(self):
+    def compute(self, num_clusters):
         """ Build our corpus of Chinese web pages and cluster them """
-        return cluster_pages(self.pages_data.values())
+        return cluster_pages(self.pages_data.values(), num_clusters)
     
     def update_db(self):
         """ Scrapes websites in global settings and updates database """
