@@ -11,7 +11,7 @@ def tokenize(sentence):
 
 def is_chinese_char(char):
     """ Confirms that a given utf-8 is a Chinese Character """
-    if u'\u4e00' <= char <= u'\u9fff':
+    if '\u4e00' <= char <= '\u9fff':
         return True
     return False
 
