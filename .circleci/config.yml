@@ -97,9 +97,9 @@ jobs:
           command: |
             pip3 install bandit
             make scan
-
-  push-container:
-    machine:
+  
+  push_container:
+    machine: true
     steps:
      - checkout
      - run:
