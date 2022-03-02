@@ -26,37 +26,33 @@ commands:
             echo -e "[kubernetes]\nname=Kubernetes\nbaseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg\nexclude=kubelet kubeadm kubectl\n" >> /etc/yum.repos.d/kubernetes.repo
             yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 
-
-  install-node-dependencies:
-    description: Install dependencies we use on node docker
+  setup-deployment-environment:
+    description: Sets environment variables for deployment.
     steps:
       - run:
-          name: Install dependencies
+          name: Set environment variables
           command: |
-            sudo apt update
-            sudo apt install lsb-core apt-transport-https
-            sudo apt install python3 python3-pip curl
-            pip3 install --upgrade pip
-            pip3 install --no-cache-dir awscli
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-              $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            sudo apt update
-            sudo apt install docker-ce docker-ce-cli containerd.io
+            ### Initialize .env ###
+            echo CLUSTER_NAME="MyEKSCluster" > .env
+            echo DOCKERPATH="$DOCKER_LOGIN/$REPO_NAME:$TAG"
+            echo REPO_NAME="base" >> .env
+            echo TAG="cn_news_clusters" >> .env
+
+            ### Set up AWS Credentials ###
+            mkdir ~/.aws
+            echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
+            export CONTEXT=$(aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME \
+              | cut -d " " -f 4)
+            echo CONTEXT=$CONTEXT >> .env
+
+            ### Get current deployment information ###
+            chmod +x ./kubernetes/get_current_deployment.sh
+            source ./kubernetes/get_current_deployment.sh
+            echo COLOR_ACTIVE=$COLOR_ACTIVE >> .env
+            echo COLOR_TEST=$COLOR_TEST >> .env
+
             
-  install-alpine-dependencies:
-    description: Install dependencies we use on alpine docker
-    steps:
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible tar gzip python curl; \
-            pip3 install --upgrade pip; \
-            pip3 install --no-cache-dir awscli;
-            apk add --update docker openrc docker-cli
-            rc-update add docker boot
-
+            
 jobs:
 
   build:
@@ -120,26 +116,26 @@ jobs:
     steps:
       - checkout
       - install-aws-cli-dependencies
+      - setup-deployment-environment
       - run:
           name: Stage a new deployment.
           command: |
-            export cluster_name="MyEKSCluster"
-            export aws_region="us-east-1"
-            export username="ewkoch3"
-            export repo_name="base"
-            export tag="cn_news_clusters"
-            export dockerpath="$username/$repo_name:$tag"
-            export name="clustering"
-            mkdir ~/.aws
-            echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
-            export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
-              | cut -d " " -f 4)
+            # export cluster_name="MyEKSCluster"
+            # export aws_region="us-east-1"
+            # export username="ewkoch3"
+            # export repo_name="base"
+            # export tag="cn_news_clusters"
+            # export dockerpath="$username/$repo_name:$tag"
+            # mkdir ~/.aws
+            # echo -e "[default]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\nregion=$AWS_DEFAULT_REGION\n" > ~/.aws/credentials
+            # export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
+            #   | cut -d " " -f 4)
             kubectl config view
             kubectl config use-context $context
             kubectl get svc
             kubectl get pods
             chmod +x ./kubernetes/get_current_deployment.sh ./kubernetes/stage_for_deployment.sh ./kubernetes/run_smoke_test.sh ./kubernetes/cleanup.sh
-            source ./kubernetes/get_current_deployment.sh
+            # source ./kubernetes/get_current_deployment.sh
             # ./kubernetes/stage_for_deployment.sh
             # if $(./kubernetes/run_smoke_test.sh) | grep "Success"
             # then
@@ -150,13 +146,14 @@ jobs:
             #     ./kubernetes/cleanup.sh $COLOR_TEST
             #     return 1
             # fi
-            echo name=$name > .env
+            echo $COLOR_ACTIVE
             pwd
             ls
       - persist_to_workspace:
           root: ~/
           paths:
             - repo/.env
+            - .aws/credentials
 
   smoke_test:
     docker:
