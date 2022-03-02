@@ -120,6 +120,10 @@ jobs:
       - run:
           name: Stage a new deployment.
           command: |
+            pwd
+            ls
+            ls ~
+            source .env
             # export cluster_name="MyEKSCluster"
             # export aws_region="us-east-1"
             # export username="ewkoch3"
