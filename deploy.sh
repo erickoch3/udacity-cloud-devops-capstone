@@ -20,12 +20,6 @@ kubectl run $name\
     --image=$dockerpath\
     --port=80 --labels app=$name
 
-# List kubernetes pods and try to get it ready
-kubectl get pods
-sleep 5 # Wait a few seconds for pod to be ready
+# List kubernetes pods to check if it's deploying.
 kubectl get pods
 
-# Forward the container port to host
-kubectl port-forward $name 8000:80
-
-echo "Rerun 'kubectl port-forward $name 8000:80' if it failed."

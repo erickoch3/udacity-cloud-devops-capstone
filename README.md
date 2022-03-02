@@ -117,7 +117,28 @@ The AWS IAM Authenticator on the Control Plane enables access to the cluster. It
 What we're doing in this step is telling the Authenticator that the nodes' IAM role is kosher to access the cluster.
 Update the `aws-auth-cm.yaml` with the output from the DataPlane's NodeInstanceRole (as ARN).
 Next, run:
-`kubectl apply -f aws-auth-cm.yaml`
+`kubectl apply -f kubernetes/aws-auth-cm.yaml`
 To apply the ConfigMap.
 You can check its status with `kubectl describe configmap -n kube-system aws-auth`
 Wait a little while, and run `kubectl get nodes`, and you should be good to go!
+
+5. Create a Replicaset
+We specify a replicaset for our deployment in our kubernetes folder named `clustering-deploy.yaml`. Upon deploying this replicaset, kubernetes
+will automatically create two pods with our container running.
+
+6. Create a Load Balancer to expose the deployment
+We create a Cluster IP with Kubernetes using our `loadbalancer.yml` manifest. 
+
+`kubectl create -f kubernetes/loadbalancer.yaml`
+
+7. Create Ingress Controls
+We need to set up an Ingress service on Kubernetes to ensure external requests can access any webpage. We'll use `ingress.yaml`.
+
+`kubectl apply -f kubernetes/ingress.yaml`
+
+8. Check Deployment!
+Let's grab our external IP (DNS name) to check on our deployment. 
+
+`kubectl get service/clustering-service-loadbalancer |  awk {'print $1" " $2 " " $4 " " $5'} | column -t`
+
+If you try connecting to the IP/hostname, you should be good to go!
