@@ -1,0 +1,46 @@
+---
+# Ref: https://aws.amazon.com/premiumsupport/knowledge-center/eks-kubernetes-services-cluster/
+# Ref: https://semaphoreci.com/blog/continuous-blue-green-deployments-with-kubernetes
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clustering-deployment-$COLOR_TEST
+  labels:
+    app: clustering
+    color: $COLOR_TEST
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clustering
+      color: $COLOR_TEST
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: clustering
+        color: $COLOR_TEST
+    spec:
+      containers:
+      - name: clustering
+        image: ewkoch3/base:cn_news_clusters
+        imagePullPolicy: IfNotPresent
+        resources:
+              limits:
+                memory: 512Mi
+                cpu: 700m
+              requests:
+                memory: 256Mi
+                cpu: 500m
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            scheme: HTTP
+            port: 80
+          periodSeconds: 15
+
+
+
