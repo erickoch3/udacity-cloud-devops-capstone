@@ -17,4 +17,4 @@ RUN pip install --upgrade pip &&\
 EXPOSE 80
 
 ## Step 5:
-CMD ["python", "cn_news_clustering/web.py"]
+CMD ["python3", "-m", "cn_news_cluster"]

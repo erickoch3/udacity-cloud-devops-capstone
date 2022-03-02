@@ -1,7 +1,7 @@
 import pytest
 import sys
 sys.path.append("..")
-import cn_news_clustering.scrape_articles as scrape
+import cn_news_cluster.scrape_articles as scrape
 from bs4 import BeautifulSoup
 import requests
 

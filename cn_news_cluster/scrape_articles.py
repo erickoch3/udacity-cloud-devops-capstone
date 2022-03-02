@@ -1,9 +1,9 @@
 #!/usr/local/bin/python
 
 """ This module helps us scrape articles from a given websites """
-from lexical_analysis import is_chinese_char
-from clustering import cluster_pages
-from params import Globals as glob
+from cn_news_cluster.lexical_analysis import is_chinese_char
+from cn_news_cluster.clustering import cluster_pages
+from cn_news_cluster.params import Globals as glob
 from bs4 import BeautifulSoup
 import requests
 import json
