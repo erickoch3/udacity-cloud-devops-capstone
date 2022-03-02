@@ -132,6 +132,7 @@ jobs:
             export name="clustering"
             export context=$(aws eks update-kubeconfig --region $aws_region --name $cluster_name \
               | cut -d " " -f 4)
+            kubectl config view
             kubectl config use-context $context
             kubectl get svc
             kubectl get pods
