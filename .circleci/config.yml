@@ -123,10 +123,10 @@ jobs:
         command: |
           export dockerpath="ewkoch3/base"
           export tag="cn_news_clusters"
+          docker pull $dockerpath:$tag
           docker build . --tag=$tag
           echo "$DOCKER_PWD" | docker login --username $DOCKER_LOGIN --password-stdin
           docker tag $tag $dockerpath:$tag
-          docker push "$dockerpath:$tag"
           docker push "$dockerpath:$tag"
 
   stage:
@@ -140,19 +140,12 @@ jobs:
       - run:
           name: Stage a new deployment environment.
           command: |
-            ls -al
-            cat .env
-            echo $COLOR_ACTIVE
             source .env
-            kubectl config view
-            kubectl config use-context $CONTEXT
-            kubectl get svc
-            kubectl get pods
-            chmod +x ./kubernetes/get_current_deployment.sh ./kubernetes/stage_for_deployment.sh ./kubernetes/run_smoke_test.sh ./kubernetes/cleanup.sh
+            # kubectl config view
+            # kubectl config use-context $CONTEXT
+            # kubectl get svc
+            # kubectl get pods
             ./kubernetes/stage_for_deployment.sh
-            echo active is $COLOR_ACTIVE
-            pwd
-            ls
       - persist_to_workspace:
           root: ~/
           paths:
@@ -171,11 +164,7 @@ jobs:
       - run:
           name: Smoke test our staged environment
           command: |
-            pwd
-            ls
-            cat ~/repo/.env
             source .env
-            echo $COLOR_TEST
             if ./kubernetes/run_smoke_test.sh | grep "Success"
             then
                 exit 0
@@ -214,15 +203,15 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build
-      # - test:
-      #     requires: [build]
-      # - analyze:
-      #     requires: [build]
-      # - push_container:
-      #     requires: [test, analyze]
+      - build
+      - test:
+          requires: [build]
+      - analyze:
+          requires: [build]
+      - push_container:
+          requires: [test, analyze]
       - stage:
-          # requires: [push_container]
+          requires: [push_container]
           filters:
             branches:
               only: ["main"]
