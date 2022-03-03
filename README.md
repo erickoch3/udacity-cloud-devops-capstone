@@ -47,7 +47,7 @@ However, to really take advantage of the possibilities of our app, we would set 
 
 TODO: Add one!
 
-### Planning - Key Actions
+## Planning - Key Actions
 
 #### Simple Scope
 - [x] Design and Build Basic App (Clusterinig)
@@ -74,6 +74,7 @@ TODO: Add one!
 - [ ] Add Clustering of Daily Articles
 - [ ] Improve UI
 
+## Development
 ### Dependencies
 For this project, set up a virtual environment for consistency:
 
@@ -102,20 +103,26 @@ make lint
 1. Set up Kubernetes Cluster Control Plane
 To start a deployment, you first need a Kubernetes Control Plane (and the master node therein). A Cloudformation template is included in .circleci.
 
+`./cloudformation/create_stack.sh myControlPlane cloudformation/cluster-control-plane.yml cloudformation/cluster-control-plane-parameters.json`
+
 2. Set up Kubernetes Data Plane
 The next stup of setting up the Kubernetes cluster is getting nodes running in the data plane. A Cloudformation template is included in .circleci.
 After applying this template, you will have a NodeGroup and node(s) for the Data Plane. HOWEVER, these nodes will not yet be part of the cluster!
 There is a crucial next step. Please make sure your AMI is an AWS EKS AMI too :)
 
+`./cloudformation/create_stack.sh myDataPlane cloudformation/cluster-data-plane.yml cloudformation/cluster-data-plane-parameters.json`
+
 3. Set up Kubeconfig
-To validate the need for the next step, use `aws eks update-kubeconfig` to gain kubectl access to the cluster and list nodes. There won't be any!
+To validate the need for the next step, use `aws eks update-kubeconfig --name MyEKSCluster` to gain kubectl access to the cluster and list nodes. There won't be any!
 
 4. Update aws-auth with NodeInstanceRole
 You must update the aws-auth ConfigMap with the NodeInstanceRole of each worker node! What does that mean?
 See: https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html.
 The AWS IAM Authenticator on the Control Plane enables access to the cluster. It gets its configuration from the aws-auth ConfigMap.
 What we're doing in this step is telling the Authenticator that the nodes' IAM role is kosher to access the cluster.
-Update the `aws-auth-cm.yaml` with the output from the DataPlane's NodeInstanceRole (as ARN).
+
+First, update the `aws-auth-cm.yaml` with the output from the DataPlane's NodeInstanceRole (as ARN).
+
 Next, run:
 `kubectl apply -f kubernetes/aws-auth-cm.yaml`
 To apply the ConfigMap.
@@ -127,8 +134,6 @@ We specify a replicaset for our deployment in our kubernetes folder named `clust
 will automatically create two pods with our container running. We use the blue-green version to specify a particular deployment.
 
 We use envsubst to set the color.
-
-`./kubernetes/deploy-blue-green.sh blue`
 
 In our pipeline, we get the current deployment with `source kubernetes/get_current_deployment.sh` to get the `COLOR_ACTIVE` and `COLOR_TEST` variables. We then run `kubernetes/stage_for_deployment.sh` to deploy the TEST environment.
 
