@@ -45,8 +45,7 @@ However, to really take advantage of the possibilities of our app, we would set 
 
 ### Overarching Diagram
 
-TODO: Add one!
-
+![alt text](https://github.com/erickoch3/udacity-cloud-devops-capstone/blob/main/image.jpg?raw=true)
 ## Planning - Key Actions
 
 #### Simple Scope
