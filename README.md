@@ -10,8 +10,8 @@ This project consists of two phases reflecting simple and full scope.
 
 1. Simple Scope
 
-Within the simple scope, we upload a database of Chinese news files scraped from the internet.
-A call to the url, `http://[url]/get_topics`, will return clusters of Chinese news articles from the database
+Within the simple scope, we upload a database of Chinese news files scraped from the internet. You can access it at `sinoinsight.com`.
+A call to the url, `http://sinoinsight.com/get_topics?num_clusters=X`, will return clusters of Chinese news articles from the database
 using KMeans clustering from sklearn.
 
 Our focus is less on the application and more on our deployment process. Once you set up CI/CD, it's much easier to make and test changes to eventually reach the full scope!
