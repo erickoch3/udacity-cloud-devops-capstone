@@ -8,7 +8,7 @@ In this project's initial (simple) scope, I have locally scraped the articles an
 
 This project consists of two phases reflecting simple and full scope.
 
-1. Simple Scope
+### 1. Simple Scope
 
 Within the simple scope, we upload a database of Chinese news files scraped from the internet. You can access it at `sinoinsight.com`.
 A call to the url, `http://sinoinsight.com/get_topics?num_clusters=X`, will return clusters of Chinese news articles from the database
@@ -16,7 +16,7 @@ using KMeans clustering from sklearn.
 
 Our focus is less on the application and more on our deployment process. Once you set up CI/CD, it's much easier to make and test changes to eventually reach the full scope!
 
-#### Pipeline
+##### Pipeline
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html
 
 Prior to pipeline deployment, we set up a Kubernetes (EKS) cluster to host the pods using CloudFormation.
@@ -38,7 +38,7 @@ The blue-green deployment pipeline will consist of the following:
 * Cleanup
     - After updating the load balancer, remove the old deployment.
 
-2. Full Scope
+### 2. Full Scope
 
 The above enables us to continuously roll out updates to our app.
 However, to really take advantage of the possibilities of our app, we would set up a daily Lambda service (on a timer) that scrapes specified sites and updates a database maintained via RDS. The docker containers would read the database from RDS and use that database to output clusters.
