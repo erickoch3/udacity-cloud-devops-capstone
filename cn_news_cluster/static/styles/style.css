@@ -51,3 +51,91 @@ tr:nth-child(even) {
     /* Support for IE. */
     font-feature-settings: 'liga';
 }
+
+body {
+    background-color: rgb(0, 0, 0);
+}
+
+h1,
+h2,
+h5,
+a,
+p {
+    color: #ae9790;
+}
+
+h5 {
+    margin: auto;
+}
+
+.btn-floating {
+    width: 8rem;
+    height: 8rem;
+    background-color: #ae9790;
+}
+
+.btn-floating:hover {
+    background-color: rgb(255, 29, 29);
+}
+
+.material-icons {
+    font-size: 48px;
+    position: relative;
+    padding-top: 38px;
+    color: #90a4ae;
+}
+
+.row {
+    display: flex;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1280px;
+    width: 90%;
+}
+
+@media only screen and (min-width: 601px) {
+    .container {
+        width: 85%;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .container {
+        width: 70%;
+    }
+}
+
+.btn-floating[disabled]:hover {
+    color: rgb(221, 61, 61);
+}
+
+.input-field>label {
+    position: relative;
+    text-align: center;
+}
+/* label focus color */
+
+.input-field input[type=text]:focus+label {
+    color: rgb(221, 61, 61);
+}
+/* label underline focus color */
+
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid rgb(221, 61, 61);
+    box-shadow: 0 1px 0 0 rgb(221, 61, 61);
+}
+/* label focus color */
+
+.input-field input[type=text]:focus+label,
+.materialize-textarea:focus:not([readonly])+label {
+    color: rgb(221, 61, 61) !important;
+}
+/* label underline focus color */
+
+.input-field input[type=text]:focus,
+.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid rgb(221, 61, 61) !important;
+    box-shadow: 0 1px 0 0 rgb(221, 61, 61) !important;
+}

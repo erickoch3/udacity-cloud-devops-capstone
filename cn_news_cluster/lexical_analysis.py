@@ -1,6 +1,7 @@
 """ Conduct NLP Pre-Processing """
 import jieba
 import re
+from googletrans import Translator
 
 
 def tokenize(sentence):
@@ -15,3 +16,10 @@ def is_chinese_char(char):
         return True
     return False
 
+def translate_df_cn_to_en(df):
+    """ Given a Pandas dataframe, translate from Chinese to English and return new dataframe """
+    translator = Translator()
+    t_df = df.copy(deep=True)
+    for column in df.columns.values:
+        t_df[column] = df[column].apply(translator.translate, src='zh-CN', dest='en').apply(getattr, args=('text',))
+    return t_df

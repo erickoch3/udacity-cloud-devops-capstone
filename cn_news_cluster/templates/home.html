@@ -2,67 +2,37 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<style>
-    .input-field>label {
-        position: relative;
-        text-align: center;
-    }
-    /* label focus color */
     
-    .input-field input[type=text]:focus+label {
-        color: rgb(221, 61, 61);
-    }
-    /* label underline focus color */
+    <body>
     
-    .input-field input[type=text]:focus {
-        border-bottom: 1px solid rgb(221, 61, 61);
-        box-shadow: 0 1px 0 0 rgb(221, 61, 61);
-    }
-    /* label focus color */
+        <div>
     
-    .input-field input[type=text]:focus+label,
-    .materialize-textarea:focus:not([readonly])+label {
-        color: rgb(221, 61, 61) !important;
-    }
-    /* label underline focus color */
-    
-    .input-field input[type=text]:focus,
-    .materialize-textarea:focus:not([readonly]) {
-        border-bottom: 1px solid rgb(221, 61, 61) !important;
-        box-shadow: 0 1px 0 0 rgb(221, 61, 61) !important;
-    }
-</style>
-
-<body>
-
-    <div>
-
-        <form class="col s12" action="get_topics">
-            <br>
-            <div class="row">
-                <div class="col s4 offset-s4 input-field" style="text-align:middle">
-                    <input type="text" class="form-control center" id="num_clusters" name="num_clusters" style="color:#9c8078;font-size:large">
-                    <label class="col s12 center" for="num_clusters" style="color:#9c8078;font-size:medium">
-                    Number of Clusters
-                </label>
-                </div>
-            </div>
-            <br>
-            <br>
-            <div class="row center">
-                <div class="col s12">
-                    <div class="center">
-                        <button type="submit" class="btn-floating waves-effect waves-circle center" style="width:16rem;height:16rem">
-                        <h5 style="font-size: 36px; padding-top: 0px; color:rgb(0, 0, 0)">Get<br>Topics</h5>
-                        </button>
+            <form class="col s12" action="get_topics">
+                <br>
+                <div class="row">
+                    <div class="col s4 offset-s4 input-field" style="text-align:middle">
+                        <input type="text" class="form-control center" id="num_clusters" name="num_clusters" style="color:#9c8078;font-size:large">
+                        <label class="col s12 center" for="num_clusters" style="color:#9c8078;font-size:medium">
+                        Number of Clusters
+                    </label>
                     </div>
                 </div>
-            </div>
-
-        </form>
-
-    </div>
-
-</body>
+                <br>
+                <br>
+                <div class="row center">
+                    <div class="col s12">
+                        <div class="center">
+                            <button type="submit" class="btn-floating waves-effect waves-circle center" style="width:16rem;height:16rem">
+                            <h5 style="font-size: 36px; padding-top: 0px; color:rgb(0, 0, 0)">Get<br>Topics</h5>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+    
+            </form>
+    
+        </div>
+    
+    </body>
 
 </html>
