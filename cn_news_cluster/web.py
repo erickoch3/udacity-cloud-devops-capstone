@@ -53,7 +53,7 @@ def translated():
         num_clusters = int(request.args['num_clusters'])
     except ValueError:
         num_clusters = DEFAULT_CLUSTERS
-    print(num_clusters)x
+    print(num_clusters)
     webdb = WebsiteDatabase(glob.sites)
     # Log the websites that we're using for topics
     sites = '\n\t'.join([site.name for site in webdb.sites])
