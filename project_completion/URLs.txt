@@ -1,0 +1,5 @@
+[github]
+https://github.com/erickoch3/udacity-cloud-devops-capstone
+
+[website]
+http://sinoinsight.com
