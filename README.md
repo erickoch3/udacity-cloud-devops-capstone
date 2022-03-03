@@ -45,7 +45,7 @@ However, to really take advantage of the possibilities of our app, we would set 
 
 ### Overarching Diagram
 
-![alt text](https://github.com/erickoch3/udacity-cloud-devops-capstone/blob/main/image.jpg?raw=true)
+![alt text](https://raw.githubusercontent.com/erickoch3/udacity-cloud-devops-capstone/main/kubernetes_news_clustering.png)
 ## Planning - Key Actions
 
 #### Simple Scope
@@ -140,7 +140,7 @@ In our pipeline, we get the current deployment with `source kubernetes/get_curre
 We create two Load Balancers with Kubernetes included in our `ingress.yaml` manifest. 
 
 `kubectl apply -f kubernetes/ingress.yaml`
-`./kubernetes/update_load_balancer.sh blue`
+`./kubernetes/set_active_deployment.sh blue`
 
 For our actual deployment, we've already created both a test and an active (main) load balanacer. We simply use Kubernetes' declarative manifest to adjust the main load balancer to point toward the TEST deployment, thereby making it active.
 
